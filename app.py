@@ -23,10 +23,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 def connect_sheet():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
-    creds_json = os.environ.get("GOOGLE_CREDENTIALS")
-    if creds_json is None:
-        raise Exception("⚠️ GOOGLE_CREDENTIALS not found in Streamlit secrets!")
-
+    creds_json = st.secrets["GOOGLE_CREDENTIALS"]  # ✅ এখন Streamlit এর secret system থেকে নিচ্ছে
     creds_dict = json.loads(creds_json)
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 
@@ -34,6 +31,7 @@ def connect_sheet():
     sheet = client.open("AI Voice Sheet").sheet1
     sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet.spreadsheet.id}"
     return sheet, sheet_url
+
 
 def get_voice_input():
     recognizer = sr.Recognizer()
