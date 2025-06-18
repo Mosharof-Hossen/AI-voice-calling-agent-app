@@ -33,18 +33,35 @@ def connect_sheet():
     return sheet, sheet_url
 
 
-def get_voice_input():
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.info("🎤 Listening...")
-        audio = recognizer.listen(source)
-    try:
-        text = recognizer.recognize_google(audio, language="en-US")
-        st.info(f"🗣️ You said: {text}")
-        return text
-    except:
-        return ""
+# def get_voice_input():
+#     recognizer = sr.Recognizer()
+#     with sr.Microphone() as source:
+#         st.info("🎤 Listening...")
+#         audio = recognizer.listen(source)
+#     try:
+#         text = recognizer.recognize_google(audio, language="en-US")
+#         st.info(f"🗣️ You said: {text}")
+#         return text
+#     except:
+#         return ""
     
+def get_voice_input():
+    try:
+        recognizer = sr.Recognizer()
+        with sr.Microphone() as source:
+            st.info("🎤 Listening...")
+            audio = recognizer.listen(source)
+        try:
+            text = recognizer.recognize_google(audio, language="en-US")
+            st.info(f"🗣️ You said: {text}")
+            return text
+        except:
+            return ""
+    except OSError:
+        # 🟡 Cloud environment: fallback to manual input
+        st.warning("🎤 Microphone not available. Please type your answer below:")
+        return st.text_input("Your answer:", key=str(datetime.now()))
+
 def speak(text):
     engine = pyttsx3.init()
     engine.say(text)
