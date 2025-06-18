@@ -5,12 +5,28 @@ import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
+import os
+import io
+from oauth2client.service_account import ServiceAccountCredentials
+
 
 
 # Connect to Google Sheet
+# def connect_sheet():
+#     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+#     creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+#     client = gspread.authorize(creds)
+#     sheet = client.open("AI Voice Sheet").sheet1
+#     sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet.spreadsheet.id}"
+#     return sheet, sheet_url
+
 def connect_sheet():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+    
+    creds_json = os.getenv("GOOGLE_CREDENTIALS")  # Match exactly!
+    creds_dict = json.loads(creds_json)
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+    
     client = gspread.authorize(creds)
     sheet = client.open("AI Voice Sheet").sheet1
     sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet.spreadsheet.id}"
