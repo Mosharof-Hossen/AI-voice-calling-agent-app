@@ -12,55 +12,28 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 
 # Connect to Google Sheet
-# def connect_sheet():
-#     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-#     creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
-#     client = gspread.authorize(creds)
-#     sheet = client.open("AI Voice Sheet").sheet1
-#     sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet.spreadsheet.id}"
-#     return sheet, sheet_url
-
 def connect_sheet():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-
-    creds_json = st.secrets["GOOGLE_CREDENTIALS"]  # ✅ এখন Streamlit এর secret system থেকে নিচ্ছে
-    creds_dict = json.loads(creds_json)
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-
+    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
     client = gspread.authorize(creds)
     sheet = client.open("AI Voice Sheet").sheet1
     sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet.spreadsheet.id}"
     return sheet, sheet_url
 
 
-# def get_voice_input():
-#     recognizer = sr.Recognizer()
-#     with sr.Microphone() as source:
-#         st.info("🎤 Listening...")
-#         audio = recognizer.listen(source)
-#     try:
-#         text = recognizer.recognize_google(audio, language="en-US")
-#         st.info(f"🗣️ You said: {text}")
-#         return text
-#     except:
-#         return ""
-    
+
 def get_voice_input():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        st.info("🎤 Listening...")
+        audio = recognizer.listen(source)
     try:
-        recognizer = sr.Recognizer()
-        with sr.Microphone() as source:
-            st.info("🎤 Listening...")
-            audio = recognizer.listen(source)
-        try:
-            text = recognizer.recognize_google(audio, language="en-US")
-            st.info(f"🗣️ You said: {text}")
-            return text
-        except:
-            return ""
-    except OSError:
-        # 🟡 Cloud environment: fallback to manual input
-        st.warning("🎤 Microphone not available. Please type your answer below:")
-        return st.text_input("Your answer:", key=str(datetime.now()))
+        text = recognizer.recognize_google(audio, language="en-US")
+        st.info(f"🗣️ You said: {text}")
+        return text
+    except:
+        return ""
+    
 
 def speak(text):
     engine = pyttsx3.init()
@@ -75,9 +48,6 @@ def insert_header(sheet):
     headers = ["Question ID", "Question Text", "User Response", "Timestamp"]
     if not sheet.row_values(1):
         sheet.insert_row(headers, 1)
-
-
-
 
 def main():
     st.title("🧠 AI Voice Agent with Google Sheet")
